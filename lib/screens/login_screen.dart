@@ -1,14 +1,17 @@
-// lib/screens/login_screen.dart
-
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:my_quiz/providers/user_provider.dart';
 import 'package:my_quiz/screens/quiz_screen.dart';
 import 'package:my_quiz/screens/signup_screen.dart';
-import 'package:my_quiz/services/users_service.dart'; // PERBAIKAN: Import UserService
-
 
 class LoginScreen extends StatefulWidget {
-  final Function(ThemeMode) setThemeMode; // KEMBALI: Menerima setThemeMode
-  const LoginScreen({Key? key, required this.setThemeMode}) : super(key: key); // KEMBALI: Menerima setThemeMode
+  final Function(ThemeMode) setThemeMode;
+  const LoginScreen({
+    Key? key,
+    required this.setThemeMode,
+  }) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -17,8 +20,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _identifierController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final UserService _userService = UserService(); // KEMBALI: UserService digunakan langsung
-  bool _isLoading = false; // KEMBALI: State lokal untuk loading
 
   @override
   void dispose() {
@@ -28,26 +29,21 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    final user = await _userService.loginUser( // KEMBALI: Memanggil UserService langsung
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final success = await userProvider.login(
       _identifierController.text,
       _passwordController.text,
     );
 
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (user != null) {
+    if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Selamat datang, ${user.username}!')),
+        SnackBar(content: Text('Selamat datang, ${userProvider.loggedInUser!.username}!')),
       );
+      await Future.delayed(const Duration(milliseconds: 750));
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => QuizScreen(setThemeMode: widget.setThemeMode)), // KEMBALI: Meneruskan setThemeMode
+        MaterialPageRoute(builder: (context) => QuizScreen(setThemeMode: (ThemeMode ) {  },)),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -58,6 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Login'),
@@ -68,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          child: Column( // KEMBALI: Tidak lagi Consumer, tapi langsung Column
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -77,9 +74,9 @@ class _LoginScreenState extends State<LoginScreen> {
               Text(
                 'Masuk ke Akun Anda',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 30),
@@ -104,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 obscureText: true,
               ),
               const SizedBox(height: 30),
-              _isLoading // KEMBALI: Menggunakan _isLoading lokal
+              userProvider.isLoadingAuth
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
                       onPressed: _login,
@@ -116,10 +113,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignUpScreen(setThemeMode: widget.setThemeMode)), // KEMBALI: Meneruskan setThemeMode
+                    MaterialPageRoute(builder: (context) =>  SignUpScreen(setThemeMode: (ThemeMode ) {  },)),
                   );
                 },
-                child: Text('Belum punya akun? Daftar sekarang', style: TextStyle(color: Theme.of(context).primaryColor)),
+                child: Text('Belum punya akun? Daftar sekarang',
+                    style: TextStyle(color: Theme.of(context).primaryColor)),
               ),
             ],
           ),

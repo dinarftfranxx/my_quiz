@@ -1,5 +1,3 @@
-// lib/screens/quiz_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_quiz/models/question.dart';
@@ -7,8 +5,8 @@ import 'package:my_quiz/screens/login_screen.dart';
 import 'package:my_quiz/screens/profile_screen.dart';
 import 'package:my_quiz/screens/result_screen.dart';
 import 'package:my_quiz/screens/settings_screen.dart';
-import 'package:my_quiz/services/users_service.dart'; // Import UserService
-
+import 'package:provider/provider.dart';
+import 'package:my_quiz/providers/user_provider.dart';
 
 class QuizScreen extends StatefulWidget {
   final Function(ThemeMode) setThemeMode;
@@ -26,37 +24,23 @@ class _QuizScreenState extends State<QuizScreen> {
   bool _isAnswerChecked = false;
   int _score = 0;
 
-  final UserService _userService = UserService();
-  String? _loggedInUsername;
-
   @override
   void initState() {
     super.initState();
     _fetchQuestions();
-    _loadLoggedInUser();
-  }
-
-  Future<void> _loadLoggedInUser() async {
-    final username = await _userService.getLoggedInUsername();
-    setState(() {
-      _loggedInUsername = username;
-    });
   }
 
   Future<void> _fetchQuestions() async {
     try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('questions')
-          .get();
+      final querySnapshot =
+          await FirebaseFirestore.instance.collection('questions').get();
 
       setState(() {
-        List<Question> allQuestions = querySnapshot.docs.map((doc) {
-          return Question.fromFirestore(doc);
-        }).toList();
-
+        List<Question> allQuestions = querySnapshot.docs
+            .map((doc) => Question.fromFirestore(doc))
+            .toList();
         allQuestions.shuffle();
         _questions = allQuestions.take(5).toList();
-
         _isLoading = false;
         _currentQuestionIndex = 0;
         _selectedAnswer = null;
@@ -93,13 +77,14 @@ class _QuizScreenState extends State<QuizScreen> {
 
   Future<void> _saveScoreToFirestore() async {
     try {
-      CollectionReference scoresCollection = FirebaseFirestore.instance.collection('scores');
-      final loggedInUserId = await _userService.getLoggedInUserId();
-      String currentUserId = loggedInUserId?.toString() ?? 'guest_user_123';
-      String currentUsername = _loggedInUsername ?? 'Guest';
+      CollectionReference scoresCollection =
+          FirebaseFirestore.instance.collection('scores');
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final userId = userProvider.loggedInUser?.id.toString() ?? 'guest_user_123';
+      final username = userProvider.loggedInUser?.username ?? 'Guest';
 
       QuerySnapshot existingScores = await scoresCollection
-          .where('userId', isEqualTo: currentUserId)
+          .where('userId', isEqualTo: userId)
           .orderBy('score', descending: true)
           .limit(1)
           .get();
@@ -113,37 +98,37 @@ class _QuizScreenState extends State<QuizScreen> {
             'score': _score,
             'totalQuestions': _questions.length,
             'timestamp': FieldValue.serverTimestamp(),
-            'username': currentUsername,
+            'username': username,
           });
-          print('Skor $currentUsername (ID: $currentUserId) berhasil diperbarui ke: $_score');
-          if (!mounted) return; // Tambahkan mounted check
+          print('Skor $username (ID: $userId) berhasil diperbarui ke: $_score');
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Skor tertinggi Anda diperbarui!')),
           );
         } else {
-          print('Skor $currentUsername (ID: $currentUserId) tidak diperbarui, skor saat ini lebih rendah/sama.');
-          if (!mounted) return; // Tambahkan mounted check
+          print('Skor $username (ID: $userId) tidak diperbarui, skor saat ini lebih rendah/sama.');
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Skor tidak melampaui skor tertinggi sebelumnya.')),
           );
         }
       } else {
         await scoresCollection.add({
-          'userId': currentUserId,
-          'username': currentUsername,
+          'userId': userId,
+          'username': username,
           'score': _score,
           'totalQuestions': _questions.length,
           'timestamp': FieldValue.serverTimestamp(),
         });
-        print('Skor baru untuk $currentUsername (ID: $currentUserId) berhasil disimpan.');
-        if (!mounted) return; // Tambahkan mounted check
+        print('Skor baru untuk $username (ID: $userId) berhasil disimpan.');
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Skor Anda berhasil disimpan!')),
         );
       }
     } catch (e) {
       print('Error menyimpan/memperbarui skor ke Firestore: $e');
-      if (!mounted) return; // Tambahkan mounted check
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Gagal menyimpan/memperbarui skor: $e')),
       );
@@ -158,15 +143,13 @@ class _QuizScreenState extends State<QuizScreen> {
         _isAnswerChecked = false;
       } else {
         _saveScoreToFirestore();
-
-        // PERBAIKAN UTAMA: Ubah Navigator.pushReplacement menjadi Navigator.push
-        Navigator.push( // INI YANG DIUBAH!
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ResultScreen(
               score: _score,
               totalQuestions: _questions.length,
-              onRetakeQuiz: _fetchQuestions, // Teruskan callback _fetchQuestions
+              onRetakeQuiz: _fetchQuestions,
             ),
           ),
         );
@@ -176,7 +159,6 @@ class _QuizScreenState extends State<QuizScreen> {
 
   Color _getOptionColor(String option) {
     if (!_isAnswerChecked) return Colors.blueAccent;
-
     final currentQuestion = _questions[_currentQuestionIndex];
     if (option == currentQuestion.correctAnswer) {
       return Colors.green;
@@ -187,54 +169,48 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   Future<void> _logout() async {
-    await _userService.logoutUser();
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    await userProvider.logout();
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => LoginScreen(setThemeMode: widget.setThemeMode)),
+      MaterialPageRoute(
+        builder: (context) => LoginScreen(setThemeMode: widget.setThemeMode),
+      ),
       (Route<dynamic> route) => false,
     );
   }
 
   @override
-    Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(_loggedInUsername != null ? 'Kuis (${_loggedInUsername!})' : 'Aplikasi Kuis'),
+        title: Text(userProvider.loggedInUser != null
+            ? 'Kuis (${userProvider.loggedInUser!.username})'
+            : 'Aplikasi Kuis'),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
-        centerTitle: false, // Judul akan rata kiri
+        centerTitle: false,
         actions: [
-          // Tombol untuk melihat/mengelola user CRUD (Admin-like) - DIHAPUS
-          // IconButton(
-          //   icon: const Icon(Icons.people),
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (context) => const UserCrudScreen()),
-          //     );
-          //   },
-          // ),
-          IconButton( // Tombol Profil (User yang login)
+          IconButton(
             icon: const Icon(Icons.account_circle),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProfileScreen(setThemeMode: widget.setThemeMode)),
+                MaterialPageRoute(builder: (context) =>  ProfileScreen(setThemeMode: (ThemeMode ) {  },)),
               );
             },
           ),
-          IconButton( // Tombol Settings (untuk tema)
+          IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => SettingsScreen(setThemeMode: widget.setThemeMode),
-                ),
+                MaterialPageRoute(builder: (context) => SettingsScreen(setThemeMode: (ThemeMode ) {  },)),
               );
             },
           ),
-          IconButton( // Tombol Logout
+          IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,
           ),
@@ -258,7 +234,6 @@ class _QuizScreenState extends State<QuizScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Indikator Pertanyaan
                       Text(
                         'Pertanyaan ${_currentQuestionIndex + 1} dari ${_questions.length}',
                         style: const TextStyle(
@@ -267,8 +242,6 @@ class _QuizScreenState extends State<QuizScreen> {
                             color: Colors.deepPurple),
                       ),
                       const SizedBox(height: 10),
-
-                      // Box Pertanyaan
                       Card(
                         elevation: 5,
                         shape: RoundedRectangleBorder(
@@ -285,13 +258,12 @@ class _QuizScreenState extends State<QuizScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-
-                      // Opsi Jawaban
                       ..._questions[_currentQuestionIndex].options.map((option) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: ElevatedButton(
-                            onPressed: _isAnswerChecked ? null : () => _checkAnswer(option),
+                            onPressed:
+                                _isAnswerChecked ? null : () => _checkAnswer(option),
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 15),
                               backgroundColor: _getOptionColor(option),
@@ -301,23 +273,20 @@ class _QuizScreenState extends State<QuizScreen> {
                               ),
                               elevation: _isAnswerChecked ? 0 : 3,
                             ),
-                            child:
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    option,
-                                    style: const TextStyle(fontSize: 18),
-                                    textAlign: TextAlign.center,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                option,
+                                style: const TextStyle(fontSize: 18),
+                                textAlign: TextAlign.center,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ),
                         );
                       }).toList(),
                       const SizedBox(height: 20),
-
-                      // Tombol Lanjut
                       if (_isAnswerChecked)
                         ElevatedButton(
                           onPressed: _nextQuestion,

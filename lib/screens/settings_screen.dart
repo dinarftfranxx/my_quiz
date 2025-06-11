@@ -1,30 +1,19 @@
-// lib/screens/settings_screen.dart
-
 import 'package:flutter/material.dart';
-// Hapus import yang tidak diperlukan
-// import 'package:provider/provider.dart';
-// import 'package:my_quiz/providers/theme_provider.dart';
-// import 'package:my_quiz/providers/user_provider.dart';
-import 'package:my_quiz/screens/login_screen.dart'; // Untuk navigasi setelah logout
-import 'package:my_quiz/services/users_service.dart'; // PERBAIKAN: Import UserService
+import 'package:my_quiz/screens/login_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:my_quiz/providers/theme_provider.dart';
+import 'package:my_quiz/providers/user_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
-  final Function(ThemeMode) setThemeMode; // KEMBALI: Menerima setThemeMode
+  final Function(ThemeMode) setThemeMode;
   const SettingsScreen({super.key, required this.setThemeMode});
 
   @override
   Widget build(BuildContext context) {
-    // KEMBALI: Mendapatkan ThemeMode aktif dari context
-    ThemeMode currentActiveThemeMode;
-    if (Theme.of(context).brightness == Brightness.light) {
-      currentActiveThemeMode = ThemeMode.light;
-    } else {
-      currentActiveThemeMode = ThemeMode.dark;
-    }
-
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pengaturan'), // Ubah judul lebih umum
+        title: const Text('Pengaturan'),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         centerTitle: true,
@@ -36,12 +25,12 @@ class SettingsScreen extends StatelessWidget {
           children: [
             Text(
               'Tampilan',
-              style: Theme.of(context).textTheme.headline6, // KEMBALI: Akses textTheme.headline6
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             ListTile(
               title: const Text('Tema'),
               trailing: DropdownButton<ThemeMode>(
-                value: currentActiveThemeMode, // KEMBALI: Gunakan currentActiveThemeMode
+                value: themeProvider.themeMode,
                 items: const [
                   DropdownMenuItem(value: ThemeMode.system, child: Text('Sistem')),
                   DropdownMenuItem(value: ThemeMode.light, child: Text('Terang')),
@@ -49,7 +38,8 @@ class SettingsScreen extends StatelessWidget {
                 ],
                 onChanged: (mode) {
                   if (mode != null) {
-                    setThemeMode(mode); // KEMBALI: Panggil setThemeMode yang diteruskan
+                    Provider.of<ThemeProvider>(context, listen: false)
+                        .setThemeMode(mode);
                   }
                 },
               ),
@@ -57,18 +47,16 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               'Akun',
-              style: Theme.of(context).textTheme.headline6, // KEMBALI: Akses textTheme.headline6
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             ListTile(
               title: const Text('Logout'),
               onTap: () async {
-                // KEMBALI: Panggil logout dari UserService langsung
-                final userService = UserService(); // Buat instance UserService
-                await userService.logoutUser();
-                // Navigasi ke LoginScreen setelah logout (hapus semua route sebelumnya)
+                final userProvider = Provider.of<UserProvider>(context, listen: false);
+                await userProvider.logout();
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginScreen(setThemeMode: setThemeMode)), // KEMBALI: Teruskan setThemeMode
+                  MaterialPageRoute(builder: (context) =>  LoginScreen(setThemeMode: (ThemeMode p1) {  },)),
                   (Route<dynamic> route) => false,
                 );
               },
@@ -78,9 +66,4 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-// PERBAIKAN: Tambahkan extension ini jika Anda menggunakannya (untuk headline6)
-extension on TextTheme {
-  TextStyle? get headline6 => headlineSmall; // headline6 diganti jadi headlineSmall di Flutter 3.x
 }

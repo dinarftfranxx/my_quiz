@@ -1,8 +1,7 @@
-// lib/screens/user_crud_screen.dart
-
 import 'package:flutter/material.dart';
-import 'package:my_quiz/models/users.dart'; // PERBAIKAN: Import 'user.dart' (TANPA 'S')
-import 'package:my_quiz/services/users_service.dart'; // PERBAIKAN: Import 'user_service.dart' (TANPA 'S')
+import 'package:my_quiz/models/users.dart';
+import 'package:provider/provider.dart';
+import 'package:my_quiz/providers/user_provider.dart';
 
 class UserCrudScreen extends StatefulWidget {
   const UserCrudScreen({super.key});
@@ -12,23 +11,14 @@ class UserCrudScreen extends StatefulWidget {
 }
 
 class _UserCrudScreenState extends State<UserCrudScreen> {
-  final UserService _userService = UserService();
-  late Future<List<User>> _usersFuture; // Gunakan late karena diinisialisasi di initState
-
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController(); // Hati-hati dengan plain text password!
+  final _passwordController = TextEditingController();
   final _updateUserIdController = TextEditingController();
   final _updateUsernameController = TextEditingController();
   final _updateEmailController = TextEditingController();
 
   User? _selectedUserForUpdate;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUsers();
-  }
 
   @override
   void dispose() {
@@ -41,27 +31,21 @@ class _UserCrudScreenState extends State<UserCrudScreen> {
     super.dispose();
   }
 
-  void _loadUsers() {
-    setState(() {
-      _usersFuture = _userService.getUsers();
-    });
-  }
-
-  // CREATE (Menggunakan registerUser dari UserService)
   Future<void> _createUser() async {
-    final user = await _userService.registerUser(
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final success = await userProvider.register(
       _usernameController.text,
       _emailController.text,
       _passwordController.text,
     );
-    if (user != null) {
+    if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('User ${user.username} created successfully!')),
+        SnackBar(content: Text('User ${userProvider.loggedInUser?.username ?? ''} created successfully!')),
       );
       _usernameController.clear();
       _emailController.clear();
       _passwordController.clear();
-      _loadUsers(); // Refresh list
+      setState(() {}); // Refresh UI
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to create user. (Username/Email mungkin sudah terdaftar)')),
@@ -69,7 +53,6 @@ class _UserCrudScreenState extends State<UserCrudScreen> {
     }
   }
 
-  // UPDATE
   Future<void> _updateUser() async {
     if (_selectedUserForUpdate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -77,11 +60,15 @@ class _UserCrudScreenState extends State<UserCrudScreen> {
       );
       return;
     }
-    final success = await _userService.updateUser(
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final success = await userProvider.updateProfile(
       _selectedUserForUpdate!.id,
-      username: _updateUsernameController.text.isNotEmpty ? _updateUsernameController.text : null,
-      email: _updateEmailController.text.isNotEmpty ? _updateEmailController.text : null,
-      // Password update juga bisa ditambahkan jika perlu form khusus
+      username: _updateUsernameController.text.isNotEmpty
+          ? _updateUsernameController.text
+          : null,
+      email: _updateEmailController.text.isNotEmpty
+          ? _updateEmailController.text
+          : null,
     );
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -90,9 +77,8 @@ class _UserCrudScreenState extends State<UserCrudScreen> {
       _updateUsernameController.clear();
       _updateEmailController.clear();
       setState(() {
-        _selectedUserForUpdate = null; // Clear selection
+        _selectedUserForUpdate = null;
       });
-      _loadUsers(); // Refresh list
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to update user.')),
@@ -100,7 +86,6 @@ class _UserCrudScreenState extends State<UserCrudScreen> {
     }
   }
 
-  // DELETE
   Future<void> _deleteUser(int id, String username) async {
     bool? confirm = await showDialog<bool>(
       context: context,
@@ -108,19 +93,24 @@ class _UserCrudScreenState extends State<UserCrudScreen> {
         title: const Text('Konfirmasi Hapus'),
         content: Text('Anda yakin ingin menghapus user "$username"?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Hapus', style: TextStyle(color: Colors.red))),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Batal')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Hapus', style: TextStyle(color: Colors.red))),
         ],
       ),
     );
 
     if (confirm == true) {
-      final success = await _userService.deleteUser(id);
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final success = await userProvider.deleteAccount();
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('User "$username" berhasil dihapus!')),
         );
-        _loadUsers(); // Refresh list
+        setState(() {}); // Refresh UI
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Gagal menghapus user "$username".')),
@@ -131,10 +121,11 @@ class _UserCrudScreenState extends State<UserCrudScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('CRUD User (MySQL)'),
-        backgroundColor: Colors.blueGrey, // Tema berbeda dari quiz
+        backgroundColor: Colors.blueGrey,
         foregroundColor: Colors.white,
         centerTitle: true,
       ),
@@ -144,7 +135,6 @@ class _UserCrudScreenState extends State<UserCrudScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // --- CREATE USER ---
               Card(
                 elevation: 4,
                 margin: const EdgeInsets.only(bottom: 20),
@@ -153,22 +143,32 @@ class _UserCrudScreenState extends State<UserCrudScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Buat User Baru', style: Theme.of(context).textTheme.titleLarge),
-                      TextField(controller: _usernameController, decoration: const InputDecoration(labelText: 'Username')),
-                      TextField(controller: _emailController, decoration: const InputDecoration(labelText: 'Email')),
-                      TextField(controller: _passwordController, decoration: const InputDecoration(labelText: 'Password', suffixIcon: Icon(Icons.visibility_off)), obscureText: true,),
+                      Text('Buat User Baru',
+                          style: Theme.of(context).textTheme.titleLarge),
+                      TextField(
+                          controller: _usernameController,
+                          decoration: const InputDecoration(labelText: 'Username')),
+                      TextField(
+                          controller: _emailController,
+                          decoration: const InputDecoration(labelText: 'Email')),
+                      TextField(
+                        controller: _passwordController,
+                        decoration: const InputDecoration(
+                            labelText: 'Password',
+                            suffixIcon: Icon(Icons.visibility_off)),
+                        obscureText: true,
+                      ),
                       const SizedBox(height: 10),
-                      ElevatedButton(onPressed: _createUser, child: const Text('Tambah User')),
+                      ElevatedButton(
+                          onPressed: _createUser, child: const Text('Tambah User')),
                     ],
                   ),
                 ),
               ),
-
-              // --- LIST USERS (READ) ---
               Text('Daftar User', style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 10),
               FutureBuilder<List<User>>(
-                future: _usersFuture,
+                future: userProvider.getUsers(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -216,8 +216,6 @@ class _UserCrudScreenState extends State<UserCrudScreen> {
                 },
               ),
               const SizedBox(height: 20),
-
-              // --- UPDATE USER ---
               if (_selectedUserForUpdate != null)
                 Card(
                   elevation: 4,
@@ -227,16 +225,23 @@ class _UserCrudScreenState extends State<UserCrudScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Update User: ${_selectedUserForUpdate!.username}', style: Theme.of(context).textTheme.titleLarge),
+                        Text('Update User: ${_selectedUserForUpdate!.username}',
+                            style: Theme.of(context).textTheme.titleLarge),
                         TextField(
                           controller: _updateUserIdController,
                           decoration: const InputDecoration(labelText: 'User ID'),
-                          readOnly: true, // ID tidak bisa diubah
+                          readOnly: true,
                         ),
-                        TextField(controller: _updateUsernameController, decoration: const InputDecoration(labelText: 'New Username')),
-                        TextField(controller: _updateEmailController, decoration: const InputDecoration(labelText: 'New Email')),
+                        TextField(
+                            controller: _updateUsernameController,
+                            decoration:
+                                const InputDecoration(labelText: 'New Username')),
+                        TextField(
+                            controller: _updateEmailController,
+                            decoration: const InputDecoration(labelText: 'New Email')),
                         const SizedBox(height: 10),
-                        ElevatedButton(onPressed: _updateUser, child: const Text('Update User')),
+                        ElevatedButton(
+                            onPressed: _updateUser, child: const Text('Update User')),
                         TextButton(
                           onPressed: () {
                             setState(() {
@@ -256,7 +261,7 @@ class _UserCrudScreenState extends State<UserCrudScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _loadUsers,
+        onPressed: () => setState(() {}),
         child: const Icon(Icons.refresh),
       ),
     );

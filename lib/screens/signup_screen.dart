@@ -1,13 +1,11 @@
-// lib/screens/signup_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:my_quiz/screens/login_screen.dart';
-import 'package:my_quiz/services/users_service.dart'; // KEMBALI: Import UserService
-
+import 'package:provider/provider.dart';
+import 'package:my_quiz/providers/user_provider.dart';
 
 class SignUpScreen extends StatefulWidget {
-  final Function(ThemeMode) setThemeMode; // KEMBALI: Menerima setThemeMode
-  const SignUpScreen({super.key, required this.setThemeMode}); // KEMBALI: Menerima setThemeMode
+  final Function(ThemeMode) setThemeMode;
+  const SignUpScreen({super.key, required this.setThemeMode});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -17,8 +15,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final UserService _userService = UserService(); // KEMBALI: UserService digunakan langsung
-  bool _isLoading = false; // KEMBALI: State lokal untuk loading
 
   @override
   void dispose() {
@@ -28,40 +24,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  // --- LOGIKA SIGN UP (MENGGUNAKAN UserService LANGSUNG) ---
   Future<void> _signUp() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    final user = await _userService.registerUser( // KEMBALI: Memanggil UserService langsung
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final success = await userProvider.register(
       _usernameController.text,
       _emailController.text,
       _passwordController.text,
     );
 
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (user != null) {
+    if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registrasi berhasil! Selamat datang, ${user.username}!')),
+        SnackBar(
+            content: Text(
+                'Registrasi berhasil! Selamat datang, ${userProvider.loggedInUser!.username}!')),
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginScreen(setThemeMode: widget.setThemeMode)), // KEMBALI: Meneruskan setThemeMode
+        MaterialPageRoute(builder: (context) =>  LoginScreen(setThemeMode: (ThemeMode p1) {  },)),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registrasi gagal. Coba username/email lain atau periksa koneksi.')),
+        const SnackBar(
+            content: Text(
+                'Registrasi gagal. Coba username/email lain atau periksa koneksi.')),
       );
     }
   }
-  // --- AKHIR LOGIKA SIGN UP ---
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Daftar Akun'),
@@ -72,7 +64,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          child: Column( // KEMBALI: Tidak lagi Consumer, tapi langsung Column
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -81,9 +73,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Text(
                 'Buat Akun Baru',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 30),
@@ -117,7 +109,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 obscureText: true,
               ),
               const SizedBox(height: 30),
-              _isLoading // KEMBALI: Menggunakan _isLoading lokal
+              userProvider.isLoadingAuth
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
                       onPressed: _signUp,
@@ -127,9 +119,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 20),
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context); // Kembali ke halaman Login
+                  Navigator.pop(context);
                 },
-                child: Text('Sudah punya akun? Login di sini', style: TextStyle(color: Theme.of(context).primaryColor)),
+                child: Text('Sudah punya akun? Login di sini',
+                    style: TextStyle(color: Theme.of(context).primaryColor)),
               ),
             ],
           ),
