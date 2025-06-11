@@ -1,0 +1,302 @@
+[
+  {
+    "questionText": "Bahasa pemrograman utama yang digunakan untuk mengembangkan aplikasi Flutter adalah?",
+    "options": ["Java", "Kotlin", "Dart", "JavaScript"],
+    "correctAnswer": "Dart",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Dalam Flutter, segala sesuatu adalah...",
+    "options": ["View", "Activity", "Widget", "Component"],
+    "correctAnswer": "Widget",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Untuk membangun antarmuka pengguna yang berubah seiring waktu atau interaksi pengguna, kita menggunakan jenis widget apa?",
+    "options": ["StatelessWidget", "StatefulWidget", "InheritedWidget", "BuildContext"],
+    "correctAnswer": "StatefulWidget",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Perintah CLI untuk membuat proyek Flutter baru adalah?",
+    "options": ["flutter build", "flutter create", "flutter run", "flutter install"],
+    "correctAnswer": "flutter create",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Apa fungsi dari `pubspec.yaml` di proyek Flutter?",
+    "options": ["Mendefinisikan logika bisnis aplikasi", "Mengatur dependensi dan metadata proyek", "Menyimpan data pengguna", "Mengelola rute navigasi"],
+    "correctAnswer": "Mengatur dependensi dan metadata proyek",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Widget yang digunakan untuk menampilkan teks di Flutter adalah?",
+    "options": ["Container", "Image", "Text", "Button"],
+    "correctAnswer": "Text",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Untuk menambahkan spasi atau padding di sekitar widget, widget apa yang sering digunakan?",
+    "options": ["SizedBox", "Padding", "Container", "Expanded"],
+    "correctAnswer": "Padding",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Bagaimana cara melakukan 'Hot Reload' di Flutter?",
+    "options": ["Menekan 'q' di terminal", "Menekan 'r' di terminal", "Menekan 'R' di terminal", "Menekan 'h' di terminal"],
+    "correctAnswer": "Menekan 'r' di terminal",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Widget mana yang digunakan untuk menumpuk widget satu di atas yang lain?",
+    "options": ["Row", "Column", "Stack", "Wrap"],
+    "correctAnswer": "Stack",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Apa nama metode yang dipanggil ketika stateful widget pertama kali dimasukkan ke dalam pohon widget?",
+    "options": ["build()", "setState()", "dispose()", "initState()"],
+    "correctAnswer": "initState()",
+    "difficulty": "Hard"
+  },
+  {
+    "questionText": "Untuk mengelola rute navigasi dalam aplikasi Flutter, kita umumnya menggunakan widget apa?",
+    "options": ["Scaffold", "AppBar", "Navigator", "MaterialApp"],
+    "correctAnswer": "Navigator",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Jenis data apa di Dart yang digunakan untuk angka bulat?",
+    "options": ["double", "String", "int", "bool"],
+    "correctAnswer": "int",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Fungsi `main()` di Dart harus memiliki kata kunci apa jika ada operasi asinkron di dalamnya?",
+    "options": ["async", "await", "void", "future"],
+    "correctAnswer": "async",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Apa tujuan dari widget `Expanded` dalam `Row` atau `Column`?",
+    "options": ["Membuat widget tidak terlihat", "Membuat widget dapat digulir", "Memenuhi ruang yang tersedia", "Menambahkan margin ke widget"],
+    "correctAnswer": "Memenuhi ruang yang tersedia",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Untuk mendapatkan data dari Firebase Cloud Firestore, kita menggunakan fungsi apa pada instance koleksi?",
+    "options": ["add()", "update()", "get()", "delete()"],
+    "correctAnswer": "get()",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Ketika Anda ingin sebuah tombol merespons sentuhan, properti apa yang Anda berikan fungsi callback?",
+    "options": ["child", "text", "onPressed", "style"],
+    "correctAnswer": "onPressed",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Apa widget yang menyediakan struktur visual dasar Material Design seperti AppBar, Drawer, dan BottomNavigationBar?",
+    "options": ["Container", "Scaffold", "Column", "Row"],
+    "correctAnswer": "Scaffold",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Keyword apa yang digunakan untuk membuat variabel yang nilainya tidak dapat diubah setelah diinisialisasi?",
+    "options": ["var", "dynamic", "const", "final"],
+    "correctAnswer": "final",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Untuk menampilkan daftar item yang dapat digulir, widget apa yang paling sering digunakan?",
+    "options": ["Column", "Row", "ListView", "Stack"],
+    "correctAnswer": "ListView",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Apa kegunaan utama dari `BuildContext` dalam Flutter?",
+    "options": ["Untuk mengatur layout widget", "Untuk mengidentifikasi posisi widget dalam pohon widget", "Untuk menangani event sentuhan", "Untuk menyimpan data aplikasi"],
+    "correctAnswer": "Untuk mengidentifikasi posisi widget dalam pohon widget",
+    "difficulty": "Hard"
+  },
+  {
+    "questionText": "Untuk mengirim data dari satu halaman (route) ke halaman lain saat navigasi, metode apa yang paling sering digunakan?",
+    "options": ["Navigator.push()", "Navigator.pop()", "Navigator.pushReplacement()", "Navigator.of().pushNamed()"],
+    "correctAnswer": "Navigator.push()",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Apa nama widget yang digunakan untuk membuat area yang bisa digulir secara vertikal dan horizontal dengan item yang disusun dalam grid?",
+    "options": ["ListView", "Column", "GridView", "Stack"],
+    "correctAnswer": "GridView",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Dalam Dart, apa perbedaan antara `const` dan `final`?",
+    "options": ["`const` bisa diubah, `final` tidak", "`final` bisa diubah, `const` tidak", "`const` adalah compile-time constant, `final` adalah runtime constant", "Tidak ada perbedaan"],
+    "correctAnswer": "`const` adalah compile-time constant, `final` adalah runtime constant",
+    "difficulty": "Hard"
+  },
+  {
+    "questionText": "Widget apa yang sering digunakan sebagai placeholder saat data sedang dimuat dari sumber eksternal?",
+    "options": ["Container", "Text", "CircularProgressIndicator", "SizedBox"],
+    "correctAnswer": "CircularProgressIndicator",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Apa itu 'dependency injection' dalam konteks pengembangan Flutter?",
+    "options": ["Cara mengelola state secara global", "Mekanisme untuk menyediakan dependensi (objek) ke komponen lain", "Metode untuk mengunduh package dari pub.dev", "Proses mengkompilasi kode Dart ke native code"],
+    "correctAnswer": "Mekanisme untuk menyediakan dependensi (objek) ke komponen lain",
+    "difficulty": "Hard"
+  },
+  {
+    "questionText": "Untuk mendengarkan perubahan pada sebuah `TextField` di Flutter, properti mana yang digunakan?",
+    "options": ["onTap", "onChanged", "onSubmit", "onSubmitted"],
+    "correctAnswer": "onChanged",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Apa itu 'asynchronous programming' di Dart dan Flutter?",
+    "options": ["Kode yang berjalan secara bersamaan (parallel)", "Kode yang dapat mengeksekusi tugas tanpa memblokir UI", "Kode yang hanya berjalan setelah UI selesai dirender", "Kode yang hanya bisa berjalan di background"],
+    "correctAnswer": "Kode yang dapat mengeksekusi tugas tanpa memblokir UI",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Objek apa yang bertindak sebagai 'kontraktor' untuk membangun layout dan menggambar widget ke layar?",
+    "options": ["BuildContext", "GlobalKey", "RenderObject", "State"],
+    "correctAnswer": "RenderObject",
+    "difficulty": "Hard"
+  },
+  {
+    "questionText": "Untuk menampilkan data yang berasal dari stream (misalnya data real-time dari Firestore), widget apa yang cocok digunakan?",
+    "options": ["FutureBuilder", "StreamBuilder", "ListView.builder", "Column"],
+    "correctAnswer": "StreamBuilder",
+    "difficulty": "Hard"
+  },
+  {
+    "questionText": "Apa manfaat utama menggunakan `setState()` pada sebuah `StatefulWidget`?",
+    "options": ["Untuk melakukan navigasi antar halaman", "Untuk memperbarui tampilan UI setelah data berubah", "Untuk memanggil API eksternal", "Untuk menginstal package baru"],
+    "correctAnswer": "Untuk memperbarui tampilan UI setelah data berubah",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Widget yang digunakan untuk merespons ketukan atau sentuhan pengguna tanpa memiliki visualisasi sendiri (invisible button) adalah?",
+    "options": ["FlatButton", "InkWell", "GestureDetector", "RaisedButton"],
+    "correctAnswer": "GestureDetector",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Apa nama file konfigurasi utama untuk dependensi dan metadata proyek Flutter?",
+    "options": ["main.dart", "androidManifest.xml", "pubspec.yaml", "info.plist"],
+    "correctAnswer": "pubspec.yaml",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Untuk mengirim notifikasi push ke perangkat pengguna dari Firebase, layanan apa yang digunakan?",
+    "options": ["Firestore", "Authentication", "Cloud Messaging", "Storage"],
+    "correctAnswer": "Cloud Messaging",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Apa yang dilakukan oleh perintah `flutter doctor`?",
+    "options": ["Menginstal semua package yang hilang", "Menganalisis kode Dart untuk error", "Memeriksa lingkungan pengembangan Flutter", "Memulai emulator Android"],
+    "correctAnswer": "Memeriksa lingkungan pengembangan Flutter",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Dalam Dart, apa itu 'null safety'?",
+    "options": ["Fitur yang mencegah aplikasi crash", "Sistem yang membantu menghindari error akibat nilai null", "Cara untuk mengelola data rahasia", "Metode untuk mempercepat eksekusi kode"],
+    "correctAnswer": "Sistem yang membantu menghindari error akibat nilai null",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Widget apa yang menyediakan fitur-fitur seperti *leading*, *title*, *actions*, dan *bottom* untuk sebuah AppBar?",
+    "options": ["Container", "Text", "Scaffold", "AppBar"],
+    "correctAnswer": "AppBar",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Untuk melakukan operasi I/O (Input/Output) seperti membaca atau menulis file di Flutter, kita menggunakan package apa?",
+    "options": ["http", "path_provider", "image_picker", "shared_preferences"],
+    "correctAnswer": "path_provider",
+    "difficulty": "Hard"
+  },
+  {
+    "questionText": "Apa fungsi dari `Provider` dalam manajemen state di Flutter?",
+    "options": ["Untuk melakukan HTTP request", "Untuk menyediakan data ke widget di bawahnya secara efisien", "Untuk menyimpan data ke database lokal", "Untuk mengatur animasi kompleks"],
+    "correctAnswer": "Untuk menyediakan data ke widget di bawahnya secara efisien",
+    "difficulty": "Hard"
+  },
+  {
+    "questionText": "Jenis `List` di Dart yang panjangnya tetap dan tidak bisa diubah setelah dibuat adalah?",
+    "options": ["List<dynamic>", "Growable List", "Fixed-length List", "Mutable List"],
+    "correctAnswer": "Fixed-length List",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Widget apa yang digunakan untuk membuat input teks seperti kolom isian nama atau email?",
+    "options": ["Text", "Button", "Image", "TextField"],
+    "correctAnswer": "TextField",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Apa kegunaan dari `FutureBuilder` di Flutter?",
+    "options": ["Membangun UI berdasarkan data dari stream", "Membangun UI berdasarkan hasil operasi asinkron yang akan datang (Future)", "Membangun UI berdasarkan perubahan state lokal", "Membangun UI dari database lokal"],
+    "correctAnswer": "Membangun UI berdasarkan hasil operasi asinkron yang akan datang (Future)",
+    "difficulty": "Hard"
+  },
+  {
+    "questionText": "Untuk menyimpan pasangan kunci-nilai sederhana secara lokal di perangkat, package apa yang sering digunakan?",
+    "options": ["path_provider", "sqflite", "shared_preferences", "http"],
+    "correctAnswer": "shared_preferences",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Apa yang dimaksud dengan 'Hot Restart' di Flutter?",
+    "options": ["Memulai ulang aplikasi sepenuhnya, termasuk state", "Memperbarui UI tanpa kehilangan state", "Menginstal ulang aplikasi dari awal", "Mengecek semua dependensi proyek"],
+    "correctAnswer": "Memulai ulang aplikasi sepenuhnya, termasuk state",
+    "difficulty": "Easy"
+  },
+  {
+    "questionText": "Ketika sebuah `StatelessWidget` membutuhkan data, data tersebut biasanya diteruskan melalui apa?",
+    "options": ["setState()", "BuildContext", "Constructor", "InheritedWidget"],
+    "correctAnswer": "Constructor",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Apa tujuan dari file `firebase_options.dart` dalam proyek Flutter?",
+    "options": ["Mendefinisikan rute navigasi Firebase", "Mengandung konfigurasi spesifik Firebase untuk setiap platform", "Menyimpan data otentikasi pengguna", "Mengelola aturan keamanan Firestore"],
+    "correctAnswer": "Mengandung konfigurasi spesifik Firebase untuk setiap platform",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Bagaimana cara mengakses data dari Firebase Realtime Database di Flutter?",
+    "options": ["Menggunakan `FirebaseFirestore.instance`", "Menggunakan `FirebaseAuth.instance`", "Menggunakan `FirebaseDatabase.instance`", "Menggunakan `FirebaseStorage.instance`"],
+    "correctAnswer": "Menggunakan `FirebaseDatabase.instance`",
+    "difficulty": "Hard"
+  },
+  {
+    "questionText": "Widget mana yang dapat digunakan untuk membuat bentuk kustom atau melakukan penggambaran 2D tingkat rendah?",
+    "options": ["Container", "CustomPaint", "SizedBox", "Icon"],
+    "correctAnswer": "CustomPaint",
+    "difficulty": "Hard"
+  },
+  {
+    "questionText": "Di Flutter, apa itu `key` pada widget?",
+    "options": ["Properti untuk styling widget", "Identifier unik untuk widget, terutama untuk mengelola state dalam daftar dinamis", "Nama dari widget tersebut", "Fungsi callback saat widget diklik"],
+    "correctAnswer": "Identifier unik untuk widget, terutama untuk mengelola state dalam daftar dinamis",
+    "difficulty": "Hard"
+  },
+  {
+    "questionText": "Apa yang dimaksud dengan 'widget tree' di Flutter?",
+    "options": ["Struktur folder proyek Anda", "Representasi hierarkis widget yang membentuk UI aplikasi", "Diagram alur logika aplikasi", "Daftar semua dependensi yang digunakan"],
+    "correctAnswer": "Representasi hierarkis widget yang membentuk UI aplikasi",
+    "difficulty": "Medium"
+  },
+  {
+    "questionText": "Untuk menangani berbagai event seperti *tap*, *double tap*, *long press* pada sebuah widget, kita bisa membungkusnya dengan widget apa?",
+    "options": ["TextButton", "RawGestureDetector", "InkWell", "ElevatedButton"],
+    "correctAnswer": "RawGestureDetector",
+    "difficulty": "Hard"
+  }
+]
